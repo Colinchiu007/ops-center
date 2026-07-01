@@ -20,6 +20,10 @@
           <el-icon><Switch /></el-icon>
           <span>功能开关</span>
         </el-menu-item>
+        <el-menu-item index="/secrets">
+          <el-icon><Key /></el-icon>
+          <span>Key 管理</span>
+        </el-menu-item>
         <el-menu-item index="/projects">
           <el-icon><FolderOpened /></el-icon>
           <span>项目配置</span>

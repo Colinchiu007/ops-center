@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from config import settings
 from database import init_db
-from routers import config, sync
+from routers import config, sync, secrets
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(name)s] %(levelname)s: %(message)s")
 logger = logging.getLogger("ops-center")
@@ -41,6 +41,7 @@ app.add_middleware(
 # Routers
 app.include_router(config.router)
 app.include_router(sync.router)
+app.include_router(secrets.router)
 
 
 @app.get("/health")

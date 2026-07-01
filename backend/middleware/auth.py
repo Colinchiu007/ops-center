@@ -13,7 +13,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     try:
         payload = jwt.decode(
             credentials.credentials,
-            settings.jwt_secret,
+            settings.get_jwt_secret(),
             algorithms=[settings.jwt_algorithm],
         )
         return payload

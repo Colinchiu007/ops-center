@@ -12,6 +12,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ["OPS_DB_PATH"] = os.path.join(tempfile.gettempdir(), "ops_test.db")
 os.environ["OPS_CONFIG_OUTPUT_DIR"] = os.path.join(tempfile.gettempdir(), "ops_test_configs")
 os.environ["OPS_SECRET_KEY"] = "test-secret"
+os.environ["OPS_JWT_SECRET"] = "test-secret"
 
 # Import models early so Base.metadata knows about them
 import models  # noqa: F401 — registers models with Base

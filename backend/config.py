@@ -11,8 +11,12 @@ class Settings(BaseSettings):
     config_output_dir: str = "data/configs"
     orchestrator_feature_gates_path: str = "data/configs/orchestrator/feature_gates.yaml"
     # JWT: share secret with orchestrator
-    jwt_secret: str = "dev-secret-change-in-production"
+    jwt_secret: str = ""  # Empty = fall back to secret_key
     jwt_algorithm: str = "HS256"
+
+    def get_jwt_secret(self) -> str:
+        """Get JWT secret, falling back to secret_key if jwt_secret not set."""
+        return self.jwt_secret or self.secret_key
     cors_origins: str = "*"
 
 
