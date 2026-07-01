@@ -27,6 +27,36 @@ async def sync_feature_gates(
         "message": f"Written {len(items)} feature gates to {path}"
     }
 
+@router.post("/platforms")
+async def sync_platforms(
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(require_admin),
+):
+    """Generate platforms.yaml from DB platform credentials."""
+    items = await config_service.get_configs_by_category(db, "platform_credential")
+    if not items:
+        raise HTTPException(400, "No platform credentials found in database")
+    path = file_writer.write_platforms_yaml(items)
+    return {"status": "ok", "path": path, "platforms": len(items)}
+
+
+@router.post("/{project_code}/params")
+async def sync_project_params(
+    project_code: str,
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(require_admin),
+):
+    """Generate project parameter config file."""
+    items = await config_service.get_configs_by_project(db, project_code, "project_param")
+    if not items:
+        raise HTTPException(400, f"No params found for {project_code}")
+
+    project = await config_service.get_project(db, project_code)
+    output_path = project.config_file_path if project and project.config_file_path else f"data/configs/{project_code}/params.yaml"
+    path = file_writer.write_project_params(project_code, items, output_path)
+    return {"status": "ok", "path": path, "params": len(items)}
+
+
 
 @router.get("/status")
 async def sync_status(db: AsyncSession = Depends(get_db)):

@@ -24,6 +24,22 @@
           <el-icon><Key /></el-icon>
           <span>Key 管理</span>
         </el-menu-item>
+        <el-menu-item index="/platforms">
+          <el-icon><Connection /></el-icon>
+          <span>平台凭证</span>
+        </el-menu-item>
+        <el-menu-item index="/parameters">
+          <el-icon><Operation /></el-icon>
+          <span>项目参数</span>
+        </el-menu-item>
+        <el-menu-item index="/snapshots">
+          <el-icon><Camera /></el-icon>
+          <span>配置快照</span>
+        </el-menu-item>
+        <el-menu-item index="/env">
+          <el-icon><Monitor /></el-icon>
+          <span>环境变量</span>
+        </el-menu-item>
         <el-menu-item index="/projects">
           <el-icon><FolderOpened /></el-icon>
           <span>项目配置</span>

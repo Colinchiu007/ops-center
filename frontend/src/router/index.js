@@ -33,6 +33,30 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/platforms',
+    name: 'Platforms',
+    component: () => import('../views/Platforms.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/parameters',
+    name: 'Parameters',
+    component: () => import('../views/Parameters.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/snapshots',
+    name: 'Snapshots',
+    component: () => import('../views/Snapshots.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/env',
+    name: 'EnvView',
+    component: () => import('../views/EnvView.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/audit-log',
     name: 'AuditLog',
     component: () => import('../views/AuditLog.vue'),
