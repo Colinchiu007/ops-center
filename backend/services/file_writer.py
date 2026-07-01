@@ -14,11 +14,29 @@ def write_feature_gates(items: list) -> str:
     """Write feature_gates.yaml from DB items. Returns the file path."""
     gates = {}
     for item in items:
-        gates[item.key] = {
-            "enabled": item.value.lower() in ("true", "1", "yes"),
-            "tier": 1,  # Default; can be overridden by a separate config item
-            "description": item.description,
-        }
+        # Try JSON parse for structured values (enabled + tier)
+        try:
+            data = json.loads(item.value)
+            if isinstance(data, dict):
+                gates[item.key] = {
+                    "enabled": data.get("enabled", False),
+                    "tier": data.get("tier", 1),
+                    "description": data.get("description", item.description),
+                }
+            elif isinstance(data, bool):
+                gates[item.key] = {
+                    "enabled": data,
+                    "tier": 1,
+                    "description": item.description,
+                }
+            else:
+                raise json.JSONDecodeError("not a gate object", item.value, 0)
+        except (json.JSONDecodeError, TypeError):
+            gates[item.key] = {
+                "enabled": item.value.lower() in ("true", "1", "yes"),
+                "tier": 1,
+                "description": item.description,
+            }
 
     # Load tier info from config items if present
     # (tier info stored as separate config items like "feature_flag_tier.xxx")

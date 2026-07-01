@@ -1,5 +1,6 @@
 """Seed OpsCenter DB from existing project config files."""
 import asyncio
+import json
 import sys
 sys.path.insert(0, "..")
 
@@ -47,7 +48,7 @@ async def seed_feature_gates(source_path: str | None = None):
     with open(source_path) as f:
         data = yaml.safe_load(f)
 
-    gates = data.get("gates", {})
+    gates = data.get("features") or data.get("gates", {})
     count = 0
 
     async with async_session() as session:
@@ -55,16 +56,22 @@ async def seed_feature_gates(source_path: str | None = None):
             config_id = f"platform-orchestrator.feature_flag.{key}"
             existing = await session.get(ConfigItem, config_id)
             if not existing:
+                # Store full gate info as JSON so tier is preserved
+                gate_data = {
+                    "enabled": gate.get("enabled", False) if isinstance(gate, dict) else bool(gate),
+                    "tier": gate.get("tier", 1) if isinstance(gate, dict) else 1,
+                    "description": gate.get("description", "") if isinstance(gate, dict) else "",
+                }
                 item = ConfigItem(
                     id=config_id,
                     project_code="platform-orchestrator",
                     category="feature_flag",
                     key=key,
-                    value=str(gate.get("enabled", False)).lower(),
-                    value_type="boolean",
-                    description=gate.get("description", ""),
+                    value=json.dumps(gate_data),
+                    value_type="json",
+                    description=gate_data["description"],
                     is_secret=0,
-                    default_value="false",
+                    default_value=json.dumps({"enabled": False, "tier": 1, "description": gate_data["description"]}),
                 )
                 session.add(item)
                 count += 1

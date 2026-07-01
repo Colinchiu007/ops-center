@@ -22,6 +22,31 @@ async def list_projects(db: AsyncSession = Depends(get_db)):
     }
 
 
+
+@router.get("/audit-log")
+async def get_audit_log(
+    config_id: str | None = Query(None),
+    limit: int = Query(100, le=500),
+    offset: int = Query(0),
+    db: AsyncSession = Depends(get_db),
+):
+    """Query config change audit log."""
+    logs = await config_service.get_audit_logs(db, config_id=config_id, limit=limit, offset=offset)
+    return {
+        "logs": [
+            {
+                "id": log.id,
+                "config_id": log.config_id,
+                "old_value": log.old_value,
+                "new_value": log.new_value,
+                "changed_by": log.changed_by,
+                "changed_at": log.changed_at,
+                "change_type": log.change_type,
+            }
+            for log in logs
+        ]
+    }
+
 @router.get("/{project_code}")
 async def get_project_config(
     project_code: str,
@@ -115,29 +140,7 @@ async def batch_update_config(
     return {"updated": len(results), "items": results}
 
 
-@router.get("/audit-log")
-async def get_audit_log(
-    config_id: str | None = Query(None),
-    limit: int = Query(100, le=500),
-    offset: int = Query(0),
-    db: AsyncSession = Depends(get_db),
-):
-    """Query config change audit log."""
-    logs = await config_service.get_audit_logs(db, config_id=config_id, limit=limit, offset=offset)
-    return {
-        "logs": [
-            {
-                "id": log.id,
-                "config_id": log.config_id,
-                "old_value": log.old_value,
-                "new_value": log.new_value,
-                "changed_by": log.changed_by,
-                "changed_at": log.changed_at,
-                "change_type": log.change_type,
-            }
-            for log in logs
-        ]
-    }
+
 
 
 def _item_to_dict(item) -> dict:
