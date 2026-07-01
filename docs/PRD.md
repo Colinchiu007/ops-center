@@ -239,24 +239,27 @@ CREATE TABLE config_group_items (
 
 **完成标准：** 打开网页 → 切换 `video_full_pipeline` → 30 秒内 ECS 上 orchestrator 生效，无需重启
 
-### 5.2 V0.2 — AI 提供商密钥管理（P0）
+### 5.2 V0.2 — 官方内置 AI Key 管理（P0）
 
-**范围**：管理所有 LLM/TTS/Video 模型的 API Key 和 Base URL
+**范围**：管理平台运营方的官方内置 LLM Key。⚠️ 注意区分：这是**运营后台**的 Key 管理，
+不是用户自己配 Key 的前台设置。用户自有 Key 的管理在 unified-frontend 会员前台实现。
+
+两套 Key 体系的区分见 [定价策略 & 用户分级设计](pricing-strategy.md)。
 
 **功能点：**
-- [ ] 提供商列表（OpenAI、Doubao、Minimax、Sensenova、Deepseek、Kling 等）
-- [ ] 每个提供商的 API Key / Base URL / Model 列表
-- [ ] Key 掩码显示（`sk-***a1b2`），点击眼睛图标查看明文
-- [ ] Key 过期提醒（手动设置过期日期，到期前 7 天告警）
-- [ ] 测试连接按钮（调用对应 API 验证 Key 可用）
-- [ ] 配置导出：生成各项目需要的 `.env` 片段或 config.yaml 片段
-- [ ] 影响分析：这个 Key 被哪些项目/端点使用
+- [ ] 官方 Key 的 CRUD（多 Provider：OpenAI、豆包、Minimax、Deepseek、Kling 等）
+- [ ] Key 掩码显示（`sk-***a1b2`），二次确认查看明文
+- [ ] Key → Tier 访问映射：哪些 Key 供免费用户用，哪些供付费用户用
+- [ ] Key 过期提醒（到期前 7 天告警）
+- [ ] 「测试连接」按钮（调用对应 API 验证 Key 可用）
+- [ ] 配置导出：生成 prompt-engine / orchestrator 需要的 Key 配置
+- [ ] 成本监控仪表盘（按 Provider 的预估月成本）
 
-**不包含：**
-- Key 自动轮换
-- 用量统计/计费
-
-**完成标准：** 轮换 OpenAI Key → 在 OpsCenter 更新 → 各项目下次启动/重载时使用新 Key
+**不包含（这些是会员前台/其他模块的范围）：**
+- ❌ 用户自有 Key 的 CRUD（已在 unified-frontend Settings/Providers 页）
+- ❌ 用户配额管理（已在 orchestrator user_usage 表）
+- ❌ Key 自动轮换
+- ❌ 支付集成（微信/支付宝）
 
 ### 5.3 V0.3 — 发布平台凭证管理（P1）
 
@@ -506,7 +509,11 @@ python scripts/seed_config.py --project orchestrator --source /path/to/.env --ty
 
 ---
 
-## 12. 与其他项目的关系
+## 12. 配套文档
+
+- [定价策略 & 用户分级功能设计](pricing-strategy.md) — 会员等级、配额体系、双 Key 架构、成本估算
+
+## 13. 与其他项目的关系
 
 ```
 OpsCenter  ←→  platform-orchestrator  (JWT 共享，读取 feature_gates)
@@ -520,7 +527,7 @@ OpsCenter  ←→  unified-frontend       (独立，互不影响)
 
 ---
 
-## 13. 迭代计划
+## 14. 迭代计划
 
 | 版本 | 内容 | 预计工时 | 交付物 |
 |------|------|---------|--------|
